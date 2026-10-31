@@ -2270,6 +2270,47 @@ body { overflow-y: auto !important; height: auto !important; overflow-x: hidden;
 /* Keep iOS no-zoom via font-size, not via touch-action */
 input, textarea, select { font-size: 16px !important; }
 </style>
+
+<style id="lock-horizontal">
+/* Lock horizontal swipe - only vertical scroll */
+html, body {
+  overflow-x: hidden !important;
+  overscroll-behavior-x: none !important;
+  touch-action: pan-y !important;
+  max-width: 100vw !important;
+}
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+/* Modal - lock horizontal */
+div[class*="fixed"][class*="inset-0"], 
+div[class*="modal"],
+div[role="dialog"],
+div[class*="bg-black/50"],
+div[class*="backdrop"] {
+  overflow-x: hidden !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-y !important;
+}
+/* The white modal card */
+div[class*="bg-white"][class*="rounded-"],
+div[class*="bg-[#FF"] {
+  overflow-x: hidden !important;
+  max-width: 92vw !important;
+  touch-action: pan-y !important;
+  overscroll-behavior: contain !important;
+}
+/* Prevent flex items from causing overflow */
+div[class*="flex"] {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+input, textarea, select {
+  max-width: 100% !important;
+}
+</style>
+
 </head>
 
 <body>
