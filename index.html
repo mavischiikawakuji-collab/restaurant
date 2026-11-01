@@ -2467,6 +2467,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${e.do
 
 
 <style>.grid{ grid-auto-flow: dense !important; }</style>
+<div id="loadingBg" style="position:fixed; inset:0; background:rgba(255,252,248,0.9); backdrop-filter:blur(8px); display:none; align-items:center; justify-content:center; z-index:10000; flex-direction:column; gap:16px">
+  <div style="width:40px; height:40px; border:3px solid #E8E0D6; border-top-color:#1A1A1A; border-radius:50%; animation:spin 0.8s linear infinite"></div>
+  <div style="font-size:14px; color:#5A5652; font-weight:600">儲存中...</div>
+</div>
+<style>@keyframes spin{ to{ transform:rotate(360deg); } }</style>
+
 <div id="customConfirmBg" style="position:fixed; inset:0; background:rgba(20,15,10,0.45); backdrop-filter:blur(10px); display:none; align-items:center; justify-content:center; z-index:9999; padding:20px">
   <div style="background:#FFFEFB; border-radius:28px; padding:28px 24px; max-width:360px; width:100%; box-shadow:0 24px 64px rgba(0,0,0,0.2); text-align:center">
     <div style="width:64px; height:64px; border-radius:50%; background:#FFF0F0; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:32px">🗑️</div>
@@ -2503,18 +2509,15 @@ For more information, see https://radix-ui.com/primitives/docs/components/${e.do
       document.body.style.overflow='';
       document.documentElement.style.overflow='';
       document.querySelectorAll('[aria-hidden="true"]').forEach(el=>{
-        if(el.id==='customConfirmBg'||el.id==='customClearBg') return;
+        if(el.id==='customConfirmBg'||el.id==='customClearBg'||el.id==='loadingBg') return;
         if(!el.querySelector('[role="dialog"]') && !el.closest('[role="dialog"]')) el.removeAttribute('aria-hidden');
       });
       document.querySelectorAll('[inert]').forEach(el=>{ try{ el.removeAttribute('inert'); }catch{} });
-      document.querySelectorAll('[data-radix-dialog-overlay]').forEach(el=>{
-        if(el.id==='customConfirmBg'||el.id==='customClearBg') return;
-        el.style.display='none';
-      });
     }catch{}
   }
   const confirmBg=document.getElementById('customConfirmBg');
   const clearBg=document.getElementById('customClearBg');
+  const loadingBg=document.getElementById('loadingBg');
   function closeAll(){
     if(confirmBg) confirmBg.style.display='none';
     if(clearBg) clearBg.style.display='none';
@@ -2537,17 +2540,22 @@ For more information, see https://radix-ui.com/primitives/docs/components/${e.do
     try{ ['shikiji-blackwhite-v2','restaurant-blackwhite-v2'].forEach(k=>localStorage.setItem(k,JSON.stringify([]))); }catch{}
     closeAll();
   };
-  // 新增/編輯後 100ms 快 reload，閃一下就出返，唔會卡白
   document.addEventListener('click',function(e){
     const btn=e.target.closest('button');
     if(!btn) return;
     const txt=(btn.textContent||'').trim();
     if(txt.includes('加入名單')||txt.includes('儲存修改')){
-      setTimeout(()=>{ unlock(); location.reload(); }, 100);
+      // 顯示 loading，感覺 smooth 過白閃
+      if(loadingBg){ loadingBg.style.display='flex'; }
+      unlock();
+      setTimeout(()=>{ unlock(); location.reload(); }, 350);
     }
   },true);
-  window.addEventListener('restaurant-added',()=>{ setTimeout(()=>{ unlock(); location.reload(); }, 100); });
-  setInterval(unlock,500);
+  window.addEventListener('restaurant-added',()=>{
+    if(loadingBg) loadingBg.style.display='flex';
+    setTimeout(()=>{ unlock(); location.reload(); }, 350);
+  });
+  setInterval(unlock,800);
 })();
 </script>
 </body>
